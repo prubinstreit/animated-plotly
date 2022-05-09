@@ -7,7 +7,7 @@ import plotly.graph_objs as go
 
 
 #os.chdir("/Users/Philip/Documents/NU Econ PhD/Scraper")
-df = pd.read_csv("https://www.dropbox.com/s/vq24nrs4hkgygfe/dfMay-07.csv?dl=0")
+df = pd.read_csv("https://www.dropbox.com/s/vq24nrs4hkgygfe/dfMay-07.csv?dl=1")
 options = df.columns
 
 app = dash.Dash(__name__)
