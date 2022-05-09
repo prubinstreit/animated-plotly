@@ -3,11 +3,11 @@ import dash
 from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import plotly.graph_objs as go
-import os
+#import os
 
 
-os.chdir("/Users/Philip/Documents/NU Econ PhD/Scraper")
-df = pd.read_csv("dfMay-07.csv")
+#os.chdir("/Users/Philip/Documents/NU Econ PhD/Scraper")
+df = pd.read_csv("https://www.dropbox.com/s/vq24nrs4hkgygfe/dfMay-07.csv?dl=0")
 options = df.columns
 
 app = dash.Dash(__name__)
