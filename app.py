@@ -3,46 +3,79 @@ import dash
 from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import plotly.graph_objs as go
-#import os
 
 
-#os.chdir("/Users/Philip/Documents/NU Econ PhD/Scraper")
-df = pd.read_csv("https://www.dropbox.com/s/vq24nrs4hkgygfe/dfMay-07.csv?dl=1")
-options = df.columns
+price = pd.read_csv('https://raw.githubusercontent.com/prubinstreit/animated-plotly/master/df2.csv')
+number = pd.read_csv('https://raw.githubusercontent.com/prubinstreit/animated-plotly/master/Group_means.csv')
 
-app = dash.Dash(__name__)
 
+app = Dash(__name__)
+server = app.server
 app.layout = html.Div([
-    #dcc.Graph(id = 'graph_dropdown'),
+    #heading
+    html.H4('Average Vial Availability by Donor Category and Ancestry over Date'),
+    #heading for radio items
+    html.P("Select an animation:"),
     dcc.Dropdown(
-        id='xselection',
-        options=options,
-        value='Ancestry',
+        id='selection',
+        options=["Price","IUI Number", "IUI ART Number", "ICI Number","ICI ART Number"],
+        value="IUI Number",
     ),
-    dcc.Dropdown(
-        id='x2selection',
-        options=options,
-        value='Height',
-    ),
-   dcc.Loading(dcc.Graph(id="graph"), type="graph") #'graph', 'cube', 'circle', 'dot' or 'default';
+    dcc.Loading(dcc.Graph(id="graph"), type="graph")
 ])
 
-@app.callback(
-  Output('graph', 'figure'),
-    [Input('xselection', 'value'),Input('x2selection', 'value')])
+#triggers the function below by passing "selection"
+@app.callback(Output("graph", "figure"), Input("selection", "value"))
 
-def display_animated_graph(selection, newselection):
-    means = df.groupby(['{}'.format(selection), '{}'.format(newselection),
-                 'Date']).agg({'IUI Number': ['mean'], 'IUI ART Number': ['mean'],
-                                'ICI Number': ['mean'], 'ICI ART Number': ['mean']}).reset_index()
-    cols = ['{}'.format(selection), '{}'.format(newselection), 'Date','IUI Number',
-        'IUI ART Number', 'ICI Number','ICI ART Number']
-    means.columns = cols
-    means = means.reset_index(col_level =1)
-    animations =    px.bar(means, x = '{}'.format(selection), y = "IUI Number", 
-               color = '{}'.format(newselection), animation_group = '{}'.format(selection),
-               animation_frame = 'Date', barmode='group', range_y=[0,11])
-    return animations
+def display_animated_graph(selection):
+    animations = {
+        "Price":
+             px.bar(price,
+               x="Ancestry",
+               y='Mean',
+               color="Donor Category",
+               animation_frame="Date",
+               animation_group="Ancestry",
+               barmode='group', range_y=[0,1500]),
+        
+        "IUI Number":
+             px.bar(number,
+               x="Ancestry",
+               y= 'IUI Number',
+               color="Donor Category",
+               animation_frame="Date",
+               animation_group="Ancestry",
+               barmode='group'),  
+        
+        "IUI ART Number":
+             px.bar(number,
+               x="Ancestry",
+               y= 'IUI ART Number',
+               color="Donor Category",
+               animation_frame="Date",
+               animation_group="Ancestry",
+               barmode='group'), 
+        
+        "ICI Number":
+             px.bar(number,
+               x="Ancestry",
+               y= 'ICI Number',
+               color="Donor Category",
+               animation_frame="Date",
+               animation_group="Ancestry",
+               barmode='group'), 
+        
+        "ICI ART Number":
+             px.bar(number,
+               x="Ancestry",
+               y= 'ICI ART Number',
+               color="Donor Category",
+               animation_frame="Date",
+               animation_group="Ancestry",
+               barmode='group')         
+        
+    }
+    return animations[selection]
 
 
 
