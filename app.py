@@ -1,3 +1,6 @@
+import numpy as np
+import os
+from datetime import datetime
 import pandas as pd
 import dash
 from dash import Dash, dcc, html, Input, Output
@@ -5,20 +8,18 @@ import plotly.express as px
 import plotly.graph_objs as go
 
 os.chdir("/Users/Philip/Documents/NU Econ PhD/Scraper")
-df = pd.read_csv("dfMay-07.csv")
+df = pd.read_csv("dfMay-10.csv")
 df = df.loc[:,~df.columns.str.startswith('IVF')]
-options = df.columns
-ycols = [cols for cols in df.columns if 'IUI'not in cols]
+ycols = [cols for cols in df.columns if 'IUI' not in cols]
 deps = ['IUI Number', 'IUI ART Number','ICI Number', 'ICI ART Number']
 diff2 = [i for i in ycols if "ICI" not in i]
 diff = [i for i in diff2 if "Unnamed: 0" not in i]
 
 
-
-app = dash.Dash(__name__)
-
+app = Dash(__name__)
+server = app.server
 app.layout = html.Div([
-    #dcc.Graph(id = 'graph_dropdown'),
+
     html.P("Select a feature:"),
     dcc.Dropdown(
         id='xselection',
@@ -35,7 +36,7 @@ app.layout = html.Div([
     dcc.Dropdown(
         id='yselection',
         options=deps,
-        value='Height',
+        value='IUI Number',
     ),
    dcc.Loading(dcc.Graph(id="graph"), type="graph") #'graph', 'cube', 'circle', 'dot' or 'default';
 ])
@@ -46,7 +47,7 @@ app.layout = html.Div([
 
 def display_animated_graph(selection, newselection, yselection):
     means = df.groupby(['{}'.format(selection), '{}'.format(newselection),
-                 'Date']).agg({'{}'.format(yselection): ['mean']}).reset_index()
+                 'Date']).agg({'IUI Number': ['mean']}).reset_index()
     cols = ['{}'.format(selection), '{}'.format(newselection), 'Date','{}'.format(yselection)]
     means.columns = cols
     means = means.reset_index(col_level =1)
@@ -55,6 +56,5 @@ def display_animated_graph(selection, newselection, yselection):
                animation_frame = 'Date', barmode='group', range_y=[0,11])
     return animations
 
-
 if __name__ == '__main__':
-    app.run_server()
+  app.run_server()
