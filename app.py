@@ -7,8 +7,7 @@ from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import plotly.graph_objs as go
 
-os.chdir("/Users/Philip/Documents/NU Econ PhD/Scraper")
-df = pd.read_csv("dfMay-10.csv")
+df = pd.read_csv("https://www.dropbox.com/s/vq24nrs4hkgygfe/dfMay-07.csv?dl=1")
 df = df.loc[:,~df.columns.str.startswith('IVF')]
 ycols = [cols for cols in df.columns if 'IUI' not in cols]
 deps = ['IUI Number', 'IUI ART Number','ICI Number', 'ICI ART Number']
