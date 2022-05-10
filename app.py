@@ -11,15 +11,22 @@ app = Dash(__name__)
 server = app.server
 
 app.layout = html.Div([
-    #dcc.Graph(id = 'graph_dropdown'),
+    html.P("Select a feature:"),
     dcc.Dropdown(
         id='xselection',
         options=options,
         value='Ancestry',
     ),
+    html.P("Select a grouping:"),
     dcc.Dropdown(
         id='x2selection',
         options=options,
+        value='Height',
+    ),
+    html.P("Select the Dependent Variable:"),
+    dcc.Dropdown(
+        id='yselection',
+        options=['IUI Number','IUI ART Number','ICI Number','ICI ART Number'],
         value='Height',
     ),
    dcc.Loading(dcc.Graph(id="graph"), type="graph") #'graph', 'cube', 'circle', 'dot' or 'default';
@@ -27,22 +34,18 @@ app.layout = html.Div([
 
 @app.callback(
   Output('graph', 'figure'),
-    [Input('xselection', 'value'),Input('x2selection', 'value')])
+    [Input('xselection', 'value'),Input('x2selection', 'value'),Input('yselection', 'value')])
 
-def display_animated_graph(selection, newselection):
+def display_animated_graph(selection, newselection, yselection):
     means = df.groupby(['{}'.format(selection), '{}'.format(newselection),
-                 'Date']).agg({'IUI Number': ['mean'], 'IUI ART Number': ['mean'],
-                                'ICI Number': ['mean'], 'ICI ART Number': ['mean']}).reset_index()
-    cols = ['{}'.format(selection), '{}'.format(newselection), 'Date','IUI Number',
-        'IUI ART Number', 'ICI Number','ICI ART Number']
+                 'Date']).agg({'{}'.format(yselection): ['mean']}).reset_index()
+    cols = ['{}'.format(selection), '{}'.format(newselection), 'Date','{}'.format(yselection)]
     means.columns = cols
     means = means.reset_index(col_level =1)
-    animations =    px.bar(means, x = '{}'.format(selection), y = "IUI Number", 
+    animations =    px.bar(means, x = '{}'.format(selection), y = '{}'.format(yselection), 
                color = '{}'.format(newselection), animation_group = '{}'.format(selection),
                animation_frame = 'Date', barmode='group', range_y=[0,11])
     return animations
-
-
 
 
 if __name__ == '__main__':
