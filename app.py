@@ -4,29 +4,37 @@ from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import plotly.graph_objs as go
 
-df = pd.read_csv("https://www.dropbox.com/s/vq24nrs4hkgygfe/dfMay-07.csv?dl=1")
+os.chdir("/Users/Philip/Documents/NU Econ PhD/Scraper")
+df = pd.read_csv("dfMay-07.csv")
+df = df.loc[:,~df.columns.str.startswith('IVF')]
 options = df.columns
+ycols = [cols for cols in df.columns if 'IUI'not in cols]
+deps = ['IUI Number', 'IUI ART Number','ICI Number', 'ICI ART Number']
+diff2 = [i for i in ycols if "ICI" not in i]
+diff = [i for i in diff2 if "Unnamed: 0" not in i]
 
-app = Dash(__name__)
-server = app.server
+
+
+app = dash.Dash(__name__)
 
 app.layout = html.Div([
+    #dcc.Graph(id = 'graph_dropdown'),
     html.P("Select a feature:"),
     dcc.Dropdown(
         id='xselection',
-        options=options,
+        options=diff,
         value='Ancestry',
     ),
     html.P("Select a grouping:"),
     dcc.Dropdown(
         id='x2selection',
-        options=options,
-        value='Height',
+        options=diff,
+        value='Eye Color',
     ),
     html.P("Select the Dependent Variable:"),
     dcc.Dropdown(
         id='yselection',
-        options=['IUI Number','IUI ART Number','ICI Number','ICI ART Number'],
+        options=deps,
         value='Height',
     ),
    dcc.Loading(dcc.Graph(id="graph"), type="graph") #'graph', 'cube', 'circle', 'dot' or 'default';
